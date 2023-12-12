@@ -1,0 +1,199 @@
+MongoDB Day-2 Task
+
+Design database for Zen class programme
+
+
+1.Find all the topics and tasks which are thought in the month of October
+
+db.getCollection('topics').aggregate( [
+ { $lookup:
+{ from:'tasks',
+localField:'topic',
+foreignFeild:'task',
+as:'Topic Task Data'
+}}'{
+$match: 
+{ topicDate:
+{ $regex: '2020=10 } }},
+{$project: 
+{ _id:0,
+topic:1,
+topicDate:1,
+ 'Topic Task Data.userId':1,
+ 'Topic Task Data.submitted':1,
+ 'Topic Task Data.task':1 }}]
+{ maxTimesMS:60000,allowDiskUse: true});
+
+```````````````````````````````````````````````````````````````````````````````````````````````````````````````````````
+2.Find all the company drives which appeared between 15 oct-2020 and 31-oct-2020
+
+db.company_drives.find({ driveDate: { $gte:"2020-10-15, $lte:"2020-10-31" }});
+
+
+````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````
+3.Find all the company drives and students who are appeared for the placement.
+
+db.company_drives.aggregate([ {
+
+$lookup: {
+
+from: "users",
+
+localField:"userId",
+
+as:"studentInfo" } },
+
+{$project: 
+
+{ _id:0,
+
+"studentInfo.userName":1,
+
+"studentInfo.userEmail":1,
+
+"studentInfo.userId":1,
+
+company :1,
+
+driveDate:1 } }] ).pretty();
+
+
+4.Find the number of problems solved by the user in codekata
+
+db.company_drives.aggregate([ {
+
+$group: { _id: "userId",
+
+totalProblemSolved: {$sum:1} } },
+
+{ $lookup: {
+
+from: "users",
+
+localField:"_id",
+
+foreignField:"_id",
+
+as:"userDetails" } },
+
+{ $project: {
+
+userId:"_id",
+
+totalProblemSolved:1,
+
+userName:{
+
+$arrayElemAt: ["$userDetails.name",0] } }   } ]);
+
+5.Find all the mentors with who has the mentee's count more than 15
+
+db.company_drives.aggregate([ {
+
+$lookup: {
+
+from: "users",
+
+localField:"_id",
+
+foreignField:"mentorId",
+
+as:"mentorDetails" } },
+
+{ $project: {
+
+mentorId:1,
+
+mentorName:1
+
+mentorcount: { $size:"$mentorDetails" } } },{
+
+$match: {
+
+mentorcount: { $lte:15 } } }]);
+
+
+6.Find the number of users who are absent and task is not submitted  between 15 oct-2020 and 31-oct-2020
+
+ db.getCollection('attendence').aggregate([
+ 
+{ $lookup: { 
+
+ from: 'topics',
+
+localField: 'topicId',
+
+foreignField: 'topicId',
+
+as: 'Absent'} },
+
+{ $lookup: {
+
+ from: 'tasks',
+
+localField: 'userId',
+
+foreignField: 'userId', 
+
+as: 'Task-notSubmitted'} }, 
+
+{ $unwind: '$Task-notSubmitted' }, 
+
+ { $unwind: '$Absent' },
+
+{ $match:
+
+ {attended: false,
+
+ 'Absent.topicDate': {$gte: '2020-10-15', $lte: '2020-10-31'} } },
+
+{ $match:
+
+ {'Task-notSubmitted.dueDate': {$gte: '2020-10-15',$lte: '2020-10-31'},
+
+'Task-notSubmitted.submitted': false} },
+
+{ $project:
+
+ { _id: 0,
+
+ 'Absent._id': 0 } },
+
+{ $project: {
+
+ 'task-notSubmitted._id': 0 } }],
+
+ { maxTimeMS: 60000, allowDiskUse: true }
+
+ );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
