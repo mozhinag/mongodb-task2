@@ -57,7 +57,7 @@ company :1,
 
 driveDate:1 } }] ).pretty();
 
-
+`````````````````````````````````````````````````````````````````````````````````````````````````````````````````
 4.Find the number of problems solved by the user in codekata
 
 db.company_drives.aggregate([ {
@@ -85,7 +85,7 @@ totalProblemSolved:1,
 userName:{
 
 $arrayElemAt: ["$userDetails.name",0] } }   } ]);
-
+````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````
 5.Find all the mentors with who has the mentee's count more than 15
 
 db.company_drives.aggregate([ {
@@ -112,7 +112,7 @@ $match: {
 
 mentorcount: { $lte:15 } } }]);
 
-
+````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````````
 6.Find the number of users who are absent and task is not submitted  between 15 oct-2020 and 31-oct-2020
 
  db.getCollection('attendence').aggregate([
